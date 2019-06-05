@@ -16,13 +16,24 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    flavorDimensions "versions"
+    productFlavors {
+        dev {
+            buildConfigField "String", "ENDPOINT", "\"https://dev.covalco.es/api/\""
+        }
+        pro {
+            buildConfigField "String", "ENDPOINT", "\"https://pro.covalco.es/api/\""
+        }
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:22.2.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    // Posem la mateixa versió que fem servir en el Coware, la 22.2.1
     implementation 'com.android.support:recyclerview-v7:22.2.1'
+    //
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
