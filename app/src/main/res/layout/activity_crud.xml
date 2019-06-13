@@ -37,10 +37,10 @@
         android:text="Comentario" />
 
     <Button
-        android:text="Crear"
+        android:id="@+id/btnCrear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/btnCrear" />
+        android:text="Crear"/>
 
     <TextView
         android:text="Seleccione un comentario"
@@ -54,10 +54,10 @@
         android:id="@+id/spinComentarios" />
 
     <Button
-        android:text="Ver"
+        android:id="@+id/btnVer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/btnVer" />
+        android:text="Ver"/>
 
     <TextView
         android:text="Ver comentario"
@@ -81,9 +81,9 @@
         android:layout_weight="0.41" />
 
     <Button
-        android:text="Eliminar"
+        android:id="@+id/btnEliminar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/btnEliminar" />
+        android:text="Eliminar"/>
 
 </LinearLayout>

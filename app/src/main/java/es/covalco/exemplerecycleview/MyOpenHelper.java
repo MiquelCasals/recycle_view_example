@@ -34,7 +34,11 @@ public class MyOpenHelper extends SQLiteOpenHelper {
 
   }
 
-  // Insertar un nuevo comentario
+  /**
+   * Insertar un nuevo comentario
+   * @param nombre
+   * @param comentario
+   */
   public void insertar(String nombre, String comentario) {
     ContentValues cv = new ContentValues();
     cv.put("user", nombre);
@@ -42,12 +46,19 @@ public class MyOpenHelper extends SQLiteOpenHelper {
     db.insert("comments", null, cv);
   }
 
-  // Borrar un comentario a partir de su Id
+  /**
+   * Borrar un comentario a partir de su Id
+   * @param idComentario id del registre a eliminar
+   */
   public void borrar(int idComentario) {
     String[] args = new String[] {String.valueOf(idComentario)};
-    db.delete("comments", "_id = ?" + idComentario, args);
+    db.delete("comments", "_id = ?", args);
   }
 
+  /**
+   * Obtenim una llista amb tots els registres de la taula comments
+   * @return llista amb tots els comentaris
+   */
   public ArrayList<Comentario> getComments() {
     // Creamos un cursor
     ArrayList<Comentario> lista = new ArrayList<Comentario>();

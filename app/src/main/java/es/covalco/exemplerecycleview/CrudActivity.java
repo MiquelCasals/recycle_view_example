@@ -44,6 +44,7 @@ public class CrudActivity extends Activity
   private MyOpenHelper db;
 
   private AwesomeValidation awesomeValidation;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -62,6 +63,9 @@ public class CrudActivity extends Activity
     btnCrear     = (Button) findViewById(R.id.btnCrear);
     btnVer       = (Button) findViewById(R.id.btnVer);
     btnEliminar  = (Button) findViewById(R.id.btnEliminar);
+    btnCrear.setOnClickListener(this);
+    btnVer.setOnClickListener(this);
+    btnEliminar.setOnClickListener(this);
 
     // Inciamos el controlador de la base de datos
     db = new MyOpenHelper(this);
@@ -71,7 +75,7 @@ public class CrudActivity extends Activity
     lista = db.getComments();
 
     // Creamos el adapter y lo asociamos al spinner
-    spinnerAdapter = new ArrayAdapter(this,
+    spinnerAdapter = new ArrayAdapter<Comentario>(this,
                                        android.R.layout.simple_spinner_dropdown_item,
                                       lista);
     spinComentarios.setAdapter(spinnerAdapter);
@@ -92,14 +96,8 @@ public class CrudActivity extends Activity
           // Insertamos un nuevo elemento en base de datos
           db.insertar(editNombre.getText().toString(),
                       editComentario.getText().toString());
-          // Actualizamos la liosta de comentarios
-          lista = db.getComments();
-          // Actualizamos el adapter y lo asociamos de nuevo al spinner
-          spinnerAdapter = new ArrayAdapter(this,
-                                            android.R.layout.simple_spinner_dropdown_item,
-                                            lista);
-          spinComentarios.setAdapter(spinnerAdapter);
-
+          // Actualitzem el spinner de comentaris
+          refrescaSpinner();
           // Here, we are sure that form is successfully validated. So, do your stuffs now...
           Toast.makeText(this,
                         "Form validated Successfully",
@@ -123,11 +121,7 @@ public class CrudActivity extends Activity
         // Si hay algun comentario seleccionado lo borramos de la base de datos y actualizamos el spinner
         if (comentario != null) {
           db.borrar(comentario.getId());
-          lista = db.getComments();
-          spinnerAdapter = new ArrayAdapter(this,
-                                            android.R.layout.simple_spinner_dropdown_item,
-                                            lista);
-          spinComentarios.setAdapter(spinnerAdapter);
+          refrescaSpinner();
           // Limpiamos los datos del panel inferior
           txtNombre.setText("");
           txtComentario.setText("");
@@ -144,13 +138,23 @@ public class CrudActivity extends Activity
                                       RegexTemplate.NOT_EMPTY, R.string.invalid_comentario);
   }
 
+  private void refrescaSpinner() {
+    // Actualizamos la llista de comentarios
+    lista = db.getComments();
+    // Actualizamos el adapter y lo asociamos de nuevo al spinner
+    spinnerAdapter = new ArrayAdapter<Comentario>(this,
+            android.R.layout.simple_spinner_dropdown_item,
+            lista);
+    spinComentarios.setAdapter(spinnerAdapter);
+  }
+
   @Override
-  public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+  public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
     if (adapterView.getId() == R.id.spinComentarios) {
       // SI hay elementos en la base de datos, establecemos el comentario actual a partir
       // del indice del elemento seleccionado en el spinner.
       if (lista.size() > 0) {
-        comentario = lista.get(i);
+        comentario = lista.get(position);
       }
     }
   }

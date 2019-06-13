@@ -36,4 +36,9 @@ public class Comentario {
     this.nombre     = nombre;
     this.comentario = comentario;
   }
+
+  @Override
+  public String toString() {
+    return nombre;
+  }
 }
