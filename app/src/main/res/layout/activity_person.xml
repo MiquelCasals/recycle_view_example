@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/activity_main"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:paddingBottom="16dp"
+              android:paddingLeft="16dp"
+              android:paddingRight="16dp"
+              android:paddingTop="16dp"
+              tools:context="es.covalco.exemplerecycleview.ExerciciPersones.PersonActivity"
+              android:orientation="vertical"
+              android:weightSum="1">
+
+
+<TextView
+    android:text="Crea una nueva persona"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/txtCrearP" />
+
+<EditText
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:inputType="textPersonName"
+    android:text="Nombre"
+    android:ems="10"
+    android:id="@+id/editNombreP" />
+
+    <EditText
+        android:id="@+id/editEmailP"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textEmailAddress"
+        android:text="Email"/>
+
+    <EditText
+        android:id="@+id/editPassport"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textEmailAddress"
+        android:text="Passport"/>
+
+<Button
+    android:id="@+id/btnCrearP"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Crear"/>
+
+<TextView
+    android:text="Seleccione una persona"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/txtSeleccionaP" />
+
+<Spinner
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/spinPersonas" />
+
+<Button
+    android:id="@+id/btnVerP"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Ver"/>
+
+<TextView
+    android:text="Ver persona"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/txtEliminarP" />
+
+<EditText
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:inputType="textPersonName"
+    android:ems="10"
+    android:id="@+id/txtNombreP" />
+
+    <EditText
+        android:id="@+id/txtEmailP"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textMultiLine|textEmailAddress"/>
+
+    <EditText
+        android:id="@+id/txtPassport"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textMultiLine|textEmailAddress"/>
+
+<Button
+    android:id="@+id/btnEliminarP"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Eliminar"/>
+
+</LinearLayout>
+
