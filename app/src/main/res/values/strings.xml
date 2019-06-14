@@ -2,5 +2,8 @@
     <string name="app_name">ExempleRecycleView</string>
     <string name="invalid_nombre">Please enter a valid Name</string>
     <string name="invalid_comentario">Please enter a valid Comment</string>
-    <string name="invalid_passport">Please enter a valid passport id</string>
+    <string name="email_is_null">Por favor introduce una dirección de correo electrónico</string>
+    <string name="email_KO">Email incorrecto. Revísalo.</string>
+    <string name="passport_is_null">Por favor, introduce un DNI</string>
+    <string name="passport_KO">El DNI no es correcto</string>
 </resources>

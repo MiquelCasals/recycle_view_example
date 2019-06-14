@@ -20,7 +20,6 @@ import java.util.ArrayList;
 
 import es.covalco.exemplerecycleview.R;
 
-
 public class PersonActivity extends Activity
                          implements View.OnClickListener,
                                     AdapterView.OnItemSelectedListener {
@@ -45,7 +44,7 @@ public class PersonActivity extends Activity
 
   // Inciamos el controlador de la base de datos
   // Controlador de base de datos
-  private OpenHelperPersones db = new OpenHelperPersones(this);
+  private OpenHelperPersones db;
 
   private AwesomeValidation awesomeValidation;
 
@@ -57,30 +56,33 @@ public class PersonActivity extends Activity
 
     awesomeValidation = new AwesomeValidation(ValidationStyle.BASIC);
     // Obtenim tots els controls
-    editNombre      = (EditText) findViewById(R.id.editNombreP);
-    editEmail       = (EditText) findViewById(R.id.editEmailP);
-    editPassport    = (EditText) findViewById(R.id.editPassport);
-    txtNombre       = (TextView) findViewById(R.id.txtNombreP);
-    txtEmail        = (TextView) findViewById(R.id.txtEmailP);
-    txtPassport     = (TextView) findViewById(R.id.txtPassport);
+    editNombre      = findViewById(R.id.editNombreP);
+    editEmail       = findViewById(R.id.editEmailP);
+    editPassport    = findViewById(R.id.editPassport);
+    txtNombre       = findViewById(R.id.txtNombreP);
+    txtEmail        = findViewById(R.id.txtEmailP);
+    txtPassport     = findViewById(R.id.txtPassport);
 
     txtNombre.setEnabled(false);
     txtEmail.setEnabled(false);
     txtPassport.setEnabled(false);
 
-    btnCrear     = (Button) findViewById(R.id.btnCrearP);
-    btnVer       = (Button) findViewById(R.id.btnVerP);
-    btnEliminar  = (Button) findViewById(R.id.btnEliminarP);
+    btnCrear     = findViewById(R.id.btnCrearP);
+    btnVer       = findViewById(R.id.btnVerP);
+    btnEliminar  = findViewById(R.id.btnEliminarP);
     btnCrear.setOnClickListener(this);
     btnVer.setOnClickListener(this);
     btnEliminar.setOnClickListener(this);
+
+    // Inciamos el controlador de la base de datos
+    db = new OpenHelperPersones(this);
 
     // Iniciamos el spinner y la lista de comentarios
     spinPersonas = (Spinner) findViewById(R.id.spinPersonas);
     lista = db.getPersons();
 
     // Creamos el adapter y lo asociamos al spinner
-    spinnerAdapter = new ArrayAdapter<Person>(this,
+    spinnerAdapter = new ArrayAdapter<>(this,
             android.R.layout.simple_spinner_dropdown_item,
             lista);
     spinPersonas.setAdapter(spinnerAdapter);
@@ -96,7 +98,7 @@ public class PersonActivity extends Activity
     // Acciones de cada botón
     switch (view.getId()) {
       // Botó Crear
-      case R.id.btnCrear:
+      case R.id.btnCrearP:
         if (awesomeValidation.validate()) {
           // Insertamos un nuevo elemento en base de datos
           db.insertarPerson(editNombre.getText().toString(),
@@ -113,7 +115,7 @@ public class PersonActivity extends Activity
         }
         break;
       // Botó Ver
-      case R.id.btnVer:
+      case R.id.btnVerP:
         awesomeValidation.clear();
         if (persona != null) {
           txtNombre.setText(persona.getName());
@@ -122,7 +124,7 @@ public class PersonActivity extends Activity
         }
         break;
       // Botó Eliminar
-      case R.id.btnEliminar:
+      case R.id.btnEliminarP:
         awesomeValidation.clear();
         // Si hay algun comentario seleccionado lo borramos de la base de datos y actualizamos el spinner
         if (persona != null) {
@@ -134,36 +136,50 @@ public class PersonActivity extends Activity
         break;
     }
   }
+
+  /**
+   * afegim les validacions als camps, Nom, Email i DNI de la persona
+   * Nota: Sembla que no pots tenir més d'una validació assignada a un camp
+   */
   private void addValidationToViews() {
     awesomeValidation.addValidation(this, R.id.editNombreP,
             RegexTemplate.NOT_EMPTY, R.string.invalid_nombre);
+    //    awesomeValidation.addValidation(this, R.id.editEmailP,
+    //            RegexTemplate.NOT_EMPTY, R.string.email_is_null);
+    // Validació pròpia del email
     awesomeValidation.addValidation(this, R.id.editEmailP,
-            RegexTemplate.NOT_EMPTY, R.string.invalid_comentario);
-    awesomeValidation.addValidation(this, R.id.editPassport,
-            RegexTemplate.NOT_EMPTY, R.string.invalid_comentario);
+            new SimpleCustomValidation() {
+              @Override
+              public boolean compare(String s) {
+                return(ValidacioEmail.validate(s));
+              }
+            }, R.string.email_KO);
+    //    awesomeValidation.addValidation(this, R.id.editPassport,
+    //            RegexTemplate.NOT_EMPTY, R.string.passport_is_null);
     // Validació pròpia del DNI: (passport_number)
     awesomeValidation.addValidation(this, R.id.editPassport,
             new SimpleCustomValidation() {
                 @Override
                 public boolean compare(String dni) {
+                  boolean isOk = false;
                   try {
                     ValidacioDNI vDNI = new ValidacioDNI(dni);
-                    return(vDNI.validar());
+                    isOk = vDNI.validar();
                   }
                   catch (Exception e) {
                     e.printStackTrace();
                   }
-                  return(false);
+                  return(isOk);
                 }
               },
-            R.string.invalid_passport);
+            R.string.passport_KO);
   }
 
   private void refrescaSpinner() {
     // Actualizamos la llista de comentarios
     lista = db.getPersons();
     // Actualizamos el adapter y lo asociamos de nuevo al spinner
-    spinnerAdapter = new ArrayAdapter<Person>(this,
+    spinnerAdapter = new ArrayAdapter<>(this,
             android.R.layout.simple_spinner_dropdown_item,
             lista);
     spinPersonas.setAdapter(spinnerAdapter);

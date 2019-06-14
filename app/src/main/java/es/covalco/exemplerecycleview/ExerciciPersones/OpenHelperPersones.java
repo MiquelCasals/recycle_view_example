@@ -1,10 +1,10 @@
 package es.covalco.exemplerecycleview.ExerciciPersones;
 
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteDatabase;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public class OpenHelperPersones extends SQLiteOpenHelper {
   private static final  String PASSPORTDETAILS_TABLE_CREATE =
           "Create Table passport_details(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                                         "passport_number TEXT, " +
-                                        "person_id INTEGER," +
+                                        "person_id INTEGER, " +
                                         "foreign key (person_id) references person(_id) on delete cascade)";
   private static final  String DB_NAME = "persones.sqlite";
   private static final int DB_VERSION = 1;
@@ -27,13 +27,17 @@ public class OpenHelperPersones extends SQLiteOpenHelper {
 
   public OpenHelperPersones(Context context) {
     super(context, DB_NAME, null, DB_VERSION);
+    Log.d(getClass().getName(), "OpenHelperPersones: entro");
     db = this.getWritableDatabase();
+    Log.d(getClass().getName(), "OpenHelperPersones: surto");
   }
 
   @Override
   public void onCreate(SQLiteDatabase db) {
+    Log.d(getClass().getName(), "onCreate: entro");
     db.execSQL(PERSON_TABLE_CREATE);
     db.execSQL(PASSPORTDETAILS_TABLE_CREATE);
+    Log.d(getClass().getName(), "onCreate: surto");
   }
 
   @Override
@@ -47,7 +51,9 @@ public class OpenHelperPersones extends SQLiteOpenHelper {
    * @param emailId Email de la persona
    * @param passportNumber DNI de la persona
    */
-  public void insertarPerson(String name, String emailId, String passportNumber) {
+  public void insertarPerson(String name,
+                             String emailId,
+                             String passportNumber) {
     ContentValues cv = new ContentValues();
     try {
       db.beginTransaction();
@@ -60,6 +66,7 @@ public class OpenHelperPersones extends SQLiteOpenHelper {
         cv.put("person_id", getPersonByRowId(rowId).getId());
         db.insert("passport_details", null, cv);
         db.setTransactionSuccessful();
+        Log.d(getClass().getName(), String.format("registre creat correctament. RowId: %d", rowId));
       }
     }
     catch (Exception e) {
@@ -72,12 +79,25 @@ public class OpenHelperPersones extends SQLiteOpenHelper {
   }
 
   /**
-   * Borrar un comentario a partir de su Id
+   * Borrar un persona
+   * S'elimina de "person" i de "passport_details"
    * @param idPerson id del registre a eliminar
    */
   public void borrarPerson(int idPerson) {
     String[] args = new String[] {String.valueOf(idPerson)};
-    db.delete("person", "_id = ?", args);
+    try {
+      db.beginTransaction();
+      db.delete("person", "_id = ?", args);
+      db.setTransactionSuccessful();
+      Log.d(getClass().getName(), String.format("registre eliminat amb id: %d", idPerson));
+    }
+    catch (Exception e) {
+      Log.e(getClass().getName(), "error en borrarPerson: " + e.getStackTrace().toString());
+      throw e;
+    }
+    finally {
+      db.endTransaction();
+    }
   }
 
   /**
@@ -87,7 +107,7 @@ public class OpenHelperPersones extends SQLiteOpenHelper {
   public Person getPersonByRowId(long fila) {
     // Creamos un cursor
     Person persona = null;
-    String select = "select * from person Where rowid = ?";
+    String select = "Select * From person Where rowid = ?";
     Cursor c = db.rawQuery(select, new String[] {String.valueOf(fila)});
     if (c != null && c.getCount() == 1) {
       c.moveToFirst();
@@ -109,27 +129,28 @@ public class OpenHelperPersones extends SQLiteOpenHelper {
    * @return llista amb tots els comentaris
    */
   public ArrayList<Person> getPersons() {
-    // Creamos un cursor
+    // Creem un cursor amb la join
     ArrayList<Person> lista = new ArrayList<Person>();
-    String select = "select * " +
-                      "from person as p inner join passport_details as pd on pd.person_id = p._id " +
+    String select = "select p._id, p.name, p.email_id, pd._id as pd_id, pd.passport_number, pd.person_id " +
+                      "from person as p " +
+                           "inner join passport_details as pd on pd.person_id = p._id " +
                      "order by 1";
     Cursor c = db.rawQuery(select, null);
     if (c != null && c.getCount() > 0) {
       c.moveToFirst();
       do {
-        int id             = c.getInt(c.getColumnIndex("p._id"));
-        String name        = c.getString(c.getColumnIndex("p.name"));
-        String emailId     = c.getString(c.getColumnIndex("p.email_id"));
+        int id             = c.getInt(c.getColumnIndex("_id"));
+        String name        = c.getString(c.getColumnIndex("name"));
+        String emailId     = c.getString(c.getColumnIndex("email_id"));
         Person person = new Person(id,name,emailId);
 
-        int pdId           = c.getInt(c.getColumnIndex("pd._id"));
-        String passportNum = c.getString(c.getColumnIndex("pd.passport_number"));
-        int personId       = c.getInt(c.getColumnIndex("pd.person_id"));
+        int pdId           = c.getInt(c.getColumnIndex("pd_id"));
+        String passportNum = c.getString(c.getColumnIndex("passport_number"));
+        int personId       = c.getInt(c.getColumnIndex("person_id"));
         PassportDetails passportDetails  = new PassportDetails(pdId, passportNum, personId);
 
         person.setPassportDetails(passportDetails);
-        // Añadimos el comentario a la lista
+        // Afegim la persona a la llista
         lista.add(person);
       } while (c.moveToNext());
     }
