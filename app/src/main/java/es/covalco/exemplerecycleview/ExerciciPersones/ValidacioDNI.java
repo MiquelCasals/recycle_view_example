@@ -19,33 +19,31 @@ public class ValidacioDNI {
     this.dni = dni;
   }
 
+
   /**
    * Funcio que ens diu si el DNI està format exclusivament per numeros
+   * La substitueixo per String.matches(regexp expression)
    * @return
    */
+/*
   private boolean soloNumeros() {
     String numero = "";
     String miDNI = "";
     String[] unoNueve = {"0","1","2","3","4","5","6","7","8","9"};
-    
+
     for (int i = 0; i < dni.length() - 1; i++) {
-      numero = dni.substring(i, i+1);
+      numero = dni.substring(i, i+1).;
       for (int j = 0; j < unoNueve.length; j++) {
         if (numero.equals(unoNueve[j])) {
           miDNI += unoNueve[j];
         }
       }
     }
-    if (miDNI.length() != 8) {
-      return(false);
-    }
-    else {
-      return(true);
-    }
-  }
+    return(miDNI.length() == 8);
+  }*/
 
   /**
-   * A partir del DNI ens computa la lletra final
+   * A partir del DNI ens computa la lletra final.
    * @return
    */
   private String letraDNI() {
@@ -60,10 +58,10 @@ public class ValidacioDNI {
   }
 
   /**
-   * Realitza la validació del DNI
-   * Ha de tenir la longitut de 9 caracters
-   * Els 8 primers han der ser numeros i l'ultim caràcter la lletra de control
-   * La lletra del DNI ha de conincidir amb la que calculo amb els 8 primers digits
+   * Realitza la validació del DNI.
+   * Ha de tenir la longitut de 9 caracters.
+   * Els 8 primers han der ser numeros i l'ultim caràcter la lletra de control.
+   * La lletra del DNI ha de conincidir amb la que calculo amb els 8 primers dígits.
    * @return
    */
   public boolean validar() {
@@ -72,6 +70,8 @@ public class ValidacioDNI {
       return(false);
     }
     letraMayuscula = dni.substring(8).toUpperCase();
-    return(soloNumeros() && letraDNI().equals(letraMayuscula));
+    boolean sonNomesNumeros = dni.substring(0,8).matches("\\d+");
+    //return(soloNumeros() && letraDNI().equals(letraMayuscula));
+    return(sonNomesNumeros && letraDNI().equals(letraMayuscula));
   }
 }

@@ -150,8 +150,8 @@ public class PersonActivity extends Activity
     awesomeValidation.addValidation(this, R.id.editEmailP,
             new SimpleCustomValidation() {
               @Override
-              public boolean compare(String s) {
-                return(ValidacioEmail.validate(s));
+              public boolean compare(String email) {
+                return(ValidacioEmail.validate(email));
               }
             }, R.string.email_KO);
     //    awesomeValidation.addValidation(this, R.id.editPassport,
@@ -206,5 +206,4 @@ public class PersonActivity extends Activity
   public void onNothingSelected(AdapterView<?> adapterView) {
 
   }
-
 }

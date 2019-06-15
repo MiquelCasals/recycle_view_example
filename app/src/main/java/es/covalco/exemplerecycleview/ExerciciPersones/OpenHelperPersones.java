@@ -7,11 +7,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 
 public class OpenHelperPersones extends SQLiteOpenHelper {
 
+/*
   private static final  String PERSON_TABLE_CREATE =
           "Create Table person(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                               "name TEXT, " +
@@ -21,12 +25,15 @@ public class OpenHelperPersones extends SQLiteOpenHelper {
                                         "passport_number TEXT, " +
                                         "person_id INTEGER, " +
                                         "foreign key (person_id) references person(_id) on delete cascade)";
+*/
   private static final  String DB_NAME = "persones.sqlite";
   private static final int DB_VERSION = 1;
   private SQLiteDatabase db;
+  private Context contexte;
 
   public OpenHelperPersones(Context context) {
     super(context, DB_NAME, null, DB_VERSION);
+    this.contexte = context;
     Log.d(getClass().getName(), "OpenHelperPersones: entro");
     db = this.getWritableDatabase();
     Log.d(getClass().getName(), "OpenHelperPersones: surto");
@@ -35,14 +42,51 @@ public class OpenHelperPersones extends SQLiteOpenHelper {
   @Override
   public void onCreate(SQLiteDatabase db) {
     Log.d(getClass().getName(), "onCreate: entro");
+    try {
+/*
     db.execSQL(PERSON_TABLE_CREATE);
     db.execSQL(PASSPORTDETAILS_TABLE_CREATE);
-    Log.d(getClass().getName(), "onCreate: surto");
+*/
+      execScript(db, "Create_Tables_Persones.sql");
+      execScript(db, "Persones_Inserts_Inicials.sql");
+      Log.d(getClass().getName(), "onCreate: surto");
+    }
+    catch (Exception e) {
+      Log.e(getClass().getName(), "error onCreate Database: " + e.getMessage());
+      throw e;
+    }
   }
 
   @Override
   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+  }
+
+  /**
+   * Executa un script contra una bd SQLite.
+   * Important: cada sentencia ha d'ocupar una linia
+   * Els comentaris de linia no es tracten (--).
+   */
+  private void execScript(SQLiteDatabase db, String script) {
+    try {
+      InputStream is = this.contexte.getAssets().open(script);
+      BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+      String line;
+      db.beginTransaction();
+      while ((line = reader.readLine()) != null) {
+        Log.i("SQL Script", line);
+        if (!line.isEmpty() && !line.trim().startsWith("--")) {
+          db.execSQL(line);
+        }
+      }
+      db.setTransactionSuccessful();
+    } catch (Exception e) {
+      Log.e("SQL Script", e.getMessage());
+    }
+    finally {
+      db.endTransaction();
+    }
+    Log.i("SQL Script", "script executat");
   }
 
   /**
